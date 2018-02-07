@@ -8,5 +8,9 @@
   },
   "dependencies": {
     "discord.js": "11.3.0",
+    "assert": 
+  },
+  "engines": {
+    "node": 8.9.4" 
   }
 }
