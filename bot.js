@@ -263,7 +263,7 @@ function generateRosterMessage(roster) {
             }
             if (stat === 'kills') {
                 player_kdrs[player] = roster.players[player]['kills']/roster.players[player]['gamesplayed'];
-                if (isNaN(player_kdrs[player])){
+                if (isNaN(player_kdrs[player]) || !isFinite(player_kdrs[player]){
                     player_kdrs[player] = 0;
                 }
             }
