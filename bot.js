@@ -143,7 +143,7 @@ read_stream_roster.on("end", function() {
             
             read_stream_message.on("end", function() {
                 // Don't log the bot in until all files have been read
-                client.login(token);
+                client.login(process.env.BOT_TOKEN);
             })
             
         });
