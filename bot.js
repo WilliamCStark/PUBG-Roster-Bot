@@ -14,9 +14,6 @@ const Discord = require('discord.js');
 // Create and instance of a Discord client
 const client = new Discord.Client();
 
-// The token of your bot
-const token = 'NDA3ODY0NTAwNjY3MDIzMzcw.DVHs_A.BTlg_SOH4LqU07JBZboM8Ex2gS4';
-
 // Functions, definitions, and objects
 // Player Stat object
 function Stats(kills, knocks, revives, gamesplayed){
