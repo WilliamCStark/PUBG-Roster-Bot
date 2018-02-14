@@ -2,7 +2,8 @@
     A bot for formatting pubg rosters
 */
 
-
+// Import the aws-sdk
+const AWS = require("aws-sdk");
 // Import the filesystem module
 const fs = require('fs');
 // Import assert module
@@ -11,8 +12,10 @@ const assert = require('assert');
 // Import the discord.js module
 const Discord = require('discord.js');
 
-// Create and instance of a Discord client
+// Create an instance of a Discord client
 const client = new Discord.Client();
+// Create an instance of an AWS S3 client
+var s3 = new AWS.S3();
 
 // Functions, definitions, and objects
 // Player Stat object
