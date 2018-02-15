@@ -154,7 +154,7 @@ var roster_msg_id = "";
 s3.getObject({
     Bucket: bucket,
     Key: 'roster.json'
-}, function(err, roster_string) {
+}, function(err, data) {
     if (err) {
         console.log(err);
         console.log('a');
@@ -162,7 +162,7 @@ s3.getObject({
     else {
         try {
             console.log(roster_string);
-            var roster_read = JSON.parse(roster_string);
+            var roster_read = JSON.parse(data.Body);
             for (var property in roster_read) {
                 roster[property] = roster_read[property];
             }
@@ -175,23 +175,23 @@ s3.getObject({
             s3.getObject({
                 Bucket: bucket,
                 Key: 'roster_channel.txt'
-            }, function(err, rci) {
+            }, function(err, data) {
                 if (err) {
                     console.log(err);
                     console.log('c');
                 }
                 else {
-                    roster_channel_id = rci;
+                    roster_channel_id = data;
                     s3.getObject({
                         Bucket: bucket,
                         Key:'roster_message.txt'
-                    }, function(err, rmi) {
+                    }, function(err, data) {
                         if (err) {
                             console.log(err);
                             console.log('d');
                         }
                         else {
-                            roster_message_id = rmi;
+                            roster_message_id = data;
 
                         }
                     });
