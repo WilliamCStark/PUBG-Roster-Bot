@@ -391,8 +391,7 @@ client.on('message', message => {
                             // const write_stream_message_id = fs.createWriteStream('roster_message.txt');
                             // write_stream_message_id.write(roster_msg_id);
                             // write_stream_message_id.end();
-                            var params = {Bucket: bucket, Key: 'roster_message.txt', Body: roster_msg_id };
-                            s3.putObject(params, function(err, data) {
+                            s3.putObject({Bucket: bucket, Key: 'roster_message.txt', Body: roster_msg_id }, function(err, data) {
                                 if (err) {
                                     console.log(err);
                                 }
@@ -411,8 +410,7 @@ client.on('message', message => {
                                     // const write_stream_message_id = fs.createWriteStream('roster_message.txt');
                                     // write_stream_message_id.write(roster_msg_id);
                                     // write_stream_message_id.end();
-                                    var params = {Bucket: bucket, Key: 'roster_message.txt', Body: roster_msg_id };
-                                    s3.putObject(params, function(err, data) {
+                                    s3.putObject({Bucket: bucket, Key: 'roster_message.txt', Body: roster_msg_id }, function(err, data) {
                                         if (err) {
                                             console.log(err);
                                         }
@@ -634,8 +632,7 @@ client.on('message', message => {
                 // const write_stream_roster = fs.createWriteStream('roster.json');
                 // write_stream_roster.write(JSON.stringify(roster));
                 // write_stream_roster.end();
-                var params = {Bucket: bucket, Key: 'roster.json', Body: JSON.stringify(roster) };
-                s3.putObject(params, function(err, data) {
+                s3.putObject({Bucket: bucket, Key: 'roster.json', Body: JSON.stringify(roster) }, function(err, data) {
                     if (err) {
                         console.log(err);
                     }
@@ -649,8 +646,7 @@ client.on('message', message => {
                             // const write_stream_message_id = fs.createWriteStream('roster_message.txt');
                             // write_stream_message_id.write(roster_msg_id);
                             // write_stream_message_id.end();
-                            var params = {Bucket: bucket, Key: 'roster_message.txt', Body: roster_msg_id };
-                            s3.putObject(params, function(err, data) {
+                            s3.putObject({Bucket: bucket, Key: 'roster_message.txt', Body: roster_msg_id }, function(err, data) {
                                 if (err) {
                                     console.log(err);
                                 }
@@ -668,8 +664,7 @@ client.on('message', message => {
                 // const write_stream_channel = fs.createWriteStream('roster_channel.txt');
                 // write_stream_channel.write(roster_channel.id);
                 // write_stream_channel.end();
-                var params = {Bucket: bucket, Key: 'roster_channel.txt', Body: roster_channel};
-                s3.putObject(params, function(err, data) {
+                s3.putObject({Bucket: bucket, Key: 'roster_channel.txt', Body: roster_channel}, function(err, data) {
                     if (err) {
                         console.log(err);
                     }
