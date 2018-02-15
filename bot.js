@@ -591,7 +591,7 @@ client.on('message', message => {
                     roster_channel.send("Command not recognised. Did you remember to seperate each segment with a ','. If you need help with which commands to use, you can try typing 'Help' for a list of commands.");
             }
             if (roster_updated) {
-                s3.putObject({Bucket: bucket + '/test', Key: 'roster.json', Body: JSON.stringify(roster) }, function(err, data) {
+                s3.putObject({Bucket: bucket, Key: 'roster.json', Body: JSON.stringify(roster) }, function(err, data) {
                     if (err) {
                         console.log(err);
                     }
