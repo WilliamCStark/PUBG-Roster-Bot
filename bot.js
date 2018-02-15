@@ -143,15 +143,13 @@ s3.getObject({
                         else {
                             console.log(data.Body.toString());
                             roster_msg_id = data.Body.toString();
-
+                            client.login(process.env.BOT_TOKEN);
                         }
                     });
                 }
             });
         }
-
     }
-    client.login(process.env.BOT_TOKEN);
 });
 
 function floatToString(flt, decimal_places) {
