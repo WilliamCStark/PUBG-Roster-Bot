@@ -157,6 +157,7 @@ s3.getObject({
 }, function(err, roster_string) {
     if (err) {
         console.log(err);
+        console.log('a');
     }
     else {
         try {
@@ -167,6 +168,7 @@ s3.getObject({
         }
         catch (err) {
             console.log(err);
+            console.log('b');
         }
         finally {
             s3.getObject({
@@ -175,6 +177,7 @@ s3.getObject({
             }, function(err, rci) {
                 if (err) {
                     console.log(err);
+                    console.log('c');
                 }
                 else {
                     roster_channel_id = rci;
@@ -184,6 +187,7 @@ s3.getObject({
                     }, function(err, rmi) {
                         if (err) {
                             console.log(err);
+                            console.log('d');
                         }
                         else {
                             roster_message_id = rmi;
