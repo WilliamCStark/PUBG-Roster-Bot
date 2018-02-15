@@ -156,7 +156,7 @@ s3.getObject({
     Key: 'roster.json'
 }, function(err, roster_string) {
     if (err) {
-
+        console.log(err);
     }
     else {
         try {
@@ -166,7 +166,7 @@ s3.getObject({
             }
         }
         catch (err) {
-
+            console.log(err);
         }
         finally {
             s3.getObject({
@@ -174,7 +174,7 @@ s3.getObject({
                 Key: 'roster_channel.txt'
             }, function(err, rci) {
                 if (err) {
-
+                    console.log(err);
                 }
                 else {
                     roster_channel_id = rci;
@@ -183,7 +183,7 @@ s3.getObject({
                         Key:'roster_message.txt'
                     }, function(err, rmi) {
                         if (err) {
-
+                            console.log(err);
                         }
                         else {
                             roster_message_id = rmi;
