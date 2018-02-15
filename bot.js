@@ -2,6 +2,7 @@
     A bot for formatting pubg rosters
 */
 
+console.log('hello')
 // Import the aws-sdk
 var AWS = require("aws-sdk");
 // Import the filesystem module
@@ -102,7 +103,6 @@ var roster_inputs = {
 // File interaction code:
 var roster_channel_id = "";
 var roster_channel = null;
-var roster_string = "";
 var roster = new Roster({},0,0,0,0);
 var roster_msg_id = "";
 
@@ -155,7 +155,7 @@ s3.getObject({
     Key: 'roster.json'
 }, function(err, roster_string) {
     if (err) {
-        
+
     }
     else {
         try {
