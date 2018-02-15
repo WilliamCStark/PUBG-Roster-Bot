@@ -504,6 +504,7 @@ client.on('message', message => {
                     for (var stat in roster){
                         roster[stat] = 0;
                     roster_updated = true;
+                break;
                 case 'help':
                     if (formatted_msg.length === 1) {
                         var help_message = "__Help Commands:__\n" +
