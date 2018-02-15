@@ -503,6 +503,7 @@ client.on('message', message => {
                     }
                     for (var stat in roster){
                         roster[stat] = 0;
+                    }
                     roster_updated = true;
                     break;
                 case 'help':
