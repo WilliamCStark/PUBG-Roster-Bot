@@ -3,7 +3,7 @@
 */
 
 // Import the aws-sdk
-const AWS = require("aws-sdk");
+var AWS = require("aws-sdk");
 // Import the filesystem module
 const fs = require('fs');
 // Import assert module
@@ -16,6 +16,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 // Create an instance of an AWS S3 client
 var s3 = new AWS.S3();
+var bucket = 'pubg-roster-bot';
 
 // Functions, definitions, and objects
 // Player Stat object
@@ -105,50 +106,95 @@ var roster_string = "";
 var roster = new Roster({},0,0,0,0);
 var roster_msg_id = "";
 
-fs.closeSync(fs.openSync('roster.json', 'a'));
-const read_stream_roster = fs.createReadStream('roster.json');
-read_stream_roster.setEncoding('utf8')
-read_stream_roster.on("data", function (chunk) {
-    assert.equal(typeof chunk, 'string');
-    roster_string += chunk;
-});
-read_stream_roster.on("end", function() {
-    try {
-        var roster_read = JSON.parse(roster_string);
-        for (var property in roster_read) {
-            roster[property] = roster_read[property];
-        }
+// fs.closeSync(fs.openSync('roster.json', 'a'));
+// const read_stream_roster = fs.createReadStream('roster.json');
+// read_stream_roster.setEncoding('utf8')
+// read_stream_roster.on("data", function (chunk) {
+//     assert.equal(typeof chunk, 'string');
+//     roster_string += chunk;
+// });
+// read_stream_roster.on("end", function() {
+//     try {
+//         var roster_read = JSON.parse(roster_string);
+//         for (var property in roster_read) {
+//             roster[property] = roster_read[property];
+//         }
+//     }
+//     catch (err) {
+
+//     }
+//     finally {
+//         // When roster has been read, begin reading the roster_channel
+//         fs.closeSync(fs.openSync('roster_channel.txt', 'a'));
+//         const read_stream_channel = fs.createReadStream('roster_channel.txt');
+//         read_stream_channel.setEncoding('utf8');
+//         read_stream_channel.on("data", function (chunk) {
+//             assert.equal(typeof chunk, 'string');
+//             roster_channel_id += chunk;
+//         });
+//         read_stream_channel.on("end", function() {
+            
+//             fs.closeSync(fs.openSync('roster_message.txt', 'a'));
+//             const read_stream_message = fs.createReadStream('roster_message.txt');
+//             read_stream_message.setEncoding('utf8');
+//             read_stream_message.on("data", function(chunk) {
+//                 assert.equal(typeof chunk, 'string');
+//                 roster_msg_id += chunk;
+//             });
+            
+//             read_stream_message.on("end", function() {
+//                 // Don't log the bot in until all files have been read
+//                 client.login(process.env.BOT_TOKEN);
+//             })
+            
+//         });
+//     }
+// });
+s3.getObject({
+    Bucket: bucket,
+    Key: 'roster.json'
+}, function(err, roster_string) {
+    if (err) {
+        
     }
-    catch (err) {
+    else {
+        try {
+            var roster_read = JSON.parse(roster_string);
+            for (var property in roster_read) {
+                roster[property] = roster_read[property];
+            }
+        }
+        catch (err) {
+
+        }
+        finally {
+            s3.getObject({
+                Bucket: bucket,
+                Key: 'roster_channel.txt'
+            }, function(err, rci) {
+                if (err) {
+
+                }
+                else {
+                    roster_channel_id = rci;
+                    s3.getObject({
+                        Bucket: bucket,
+                        Key:'roster_message.txt'
+                    }, function(err, rmi) {
+                        if (err) {
+
+                        }
+                        else {
+                            roster_message_id = rmi;
+                        }
+                    });
+                }
+            });
+        }
 
     }
-    finally {
-        // When roster has been read, begin reading the roster_channel
-        fs.closeSync(fs.openSync('roster_channel.txt', 'a'));
-        const read_stream_channel = fs.createReadStream('roster_channel.txt');
-        read_stream_channel.setEncoding('utf8');
-        read_stream_channel.on("data", function (chunk) {
-            assert.equal(typeof chunk, 'string');
-            roster_channel_id += chunk;
-        });
-        read_stream_channel.on("end", function() {
-            
-            fs.closeSync(fs.openSync('roster_message.txt', 'a'));
-            const read_stream_message = fs.createReadStream('roster_message.txt');
-            read_stream_message.setEncoding('utf8');
-            read_stream_message.on("data", function(chunk) {
-                assert.equal(typeof chunk, 'string');
-                roster_msg_id += chunk;
-            });
-            
-            read_stream_message.on("end", function() {
-                // Don't log the bot in until all files have been read
-                client.login(process.env.BOT_TOKEN);
-            })
-            
-        });
-    }
 });
+
 function floatToString(flt, decimal_places) {
     flt = Math.round(flt * Math.pow(10, decimal_places)) / Math.pow(10, decimal_places);
     var float_split = flt.toString().split('.');
@@ -342,9 +388,15 @@ client.on('message', message => {
                     if (formatted_msg.length === 1) {
                         roster_channel.send(generateRosterMessage(roster)).then(function(message) {
                             roster_msg_id = message.id;
-                            const write_stream_message_id = fs.createWriteStream('roster_message.txt');
-                            write_stream_message_id.write(roster_msg_id);
-                            write_stream_message_id.end();
+                            // const write_stream_message_id = fs.createWriteStream('roster_message.txt');
+                            // write_stream_message_id.write(roster_msg_id);
+                            // write_stream_message_id.end();
+                            var params = {Bucket: bucket, Key: 'roster_message.txt', Body: roster_msg_id };
+                            s3.putObject(params, function(err, data) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                            });
                         }).catch(console.error);
                     }
                     break;
@@ -356,9 +408,15 @@ client.on('message', message => {
                             }).catch(function(reason) { 
                                 roster_channel.send(generateRosterMessage(roster)).then(function(message) {
                                     roster_msg_id = message.id;
-                                    const write_stream_message_id = fs.createWriteStream('roster_message.txt');
-                                    write_stream_message_id.write(roster_msg_id);
-                                    write_stream_message_id.end();
+                                    // const write_stream_message_id = fs.createWriteStream('roster_message.txt');
+                                    // write_stream_message_id.write(roster_msg_id);
+                                    // write_stream_message_id.end();
+                                    var params = {Bucket: bucket, Key: 'roster_message.txt', Body: roster_msg_id };
+                                    s3.putObject(params, function(err, data) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                    });
                                 }).catch(console.error);
                             });
                         }
@@ -573,18 +631,30 @@ client.on('message', message => {
                     roster_channel.send("Command not recognised. Did you remember to seperate each segment with a ','. If you need help with which commands to use, you can try typing 'Help' for a list of commands.");
             }
             if (roster_updated) {
-                const write_stream_roster = fs.createWriteStream('roster.json');
-                write_stream_roster.write(JSON.stringify(roster));
-                write_stream_roster.end();
+                // const write_stream_roster = fs.createWriteStream('roster.json');
+                // write_stream_roster.write(JSON.stringify(roster));
+                // write_stream_roster.end();
+                var params = {Bucket: bucket, Key: 'roster.json', Body: JSON.stringify(roster) };
+                s3.putObject(params, function(err, data) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
                 async function edit() {
                     var roster_msg = await roster_channel.fetchMessage(roster_msg_id).then(function(message){
                         message.edit(generateRosterMessage(roster)).catch(console.error);
                     }).catch(function(reason) { 
                         roster_channel.send(generateRosterMessage(roster)).then(function(message) {
                             roster_msg_id = message.id;
-                            const write_stream_message_id = fs.createWriteStream('roster_message.txt');
-                            write_stream_message_id.write(roster_msg_id);
-                            write_stream_message_id.end();
+                            // const write_stream_message_id = fs.createWriteStream('roster_message.txt');
+                            // write_stream_message_id.write(roster_msg_id);
+                            // write_stream_message_id.end();
+                            var params = {Bucket: bucket, Key: 'roster_message.txt', Body: roster_msg_id };
+                            s3.putObject(params, function(err, data) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                            });
                         }).catch(console.error);
                     });
                 }
@@ -595,9 +665,15 @@ client.on('message', message => {
             if (message.content === "!set roster channel"){
                 roster_channel = message.channel;
                 roster_channel.send("Roster Channel Set");
-                const write_stream_channel = fs.createWriteStream('roster_channel.txt');
-                write_stream_channel.write(roster_channel.id);
-                write_stream_channel.end();
+                // const write_stream_channel = fs.createWriteStream('roster_channel.txt');
+                // write_stream_channel.write(roster_channel.id);
+                // write_stream_channel.end();
+                var params = {Bucket: bucket, Key: 'roster_channel.txt', Body: roster_channel};
+                s3.putObject(params, function(err, data) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
             }
         }
     }
