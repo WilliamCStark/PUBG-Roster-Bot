@@ -161,7 +161,7 @@ s3.getObject({
     }
     else {
         try {
-            console.log(data.Body);
+            console.log(data.Body.toString());
             var roster_read = JSON.parse(data.Body.toString());
             for (var property in roster_read) {
                 roster[property] = roster_read[property];
