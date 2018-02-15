@@ -3,6 +3,7 @@
 */
 
 console.log('hello');
+
 // Import the aws-sdk
 var AWS = require("aws-sdk");
 // Import the filesystem module
@@ -186,7 +187,7 @@ s3.getObject({
                         }
                         else {
                             roster_message_id = rmi;
-                            client.login(process.env.BOT_TOKEN);
+
                         }
                     });
                 }
@@ -194,6 +195,7 @@ s3.getObject({
         }
 
     }
+    client.login(process.env.BOT_TOKEN);
 });
 
 function floatToString(flt, decimal_places) {
