@@ -105,7 +105,50 @@ var roster_channel = null;
 var roster = new Roster({},0,0,0,0);
 var roster_msg_id = "";
 
-
+s3.getObject({
+    Bucket: bucket,
+    Key: 'roster.json'
+}, function(err, data) {
+    if (err) {
+        console.log(err);
+    }
+    else {
+        try {
+            var roster_read = JSON.parse(data.Body.toString());
+            for (var property in roster_read) {
+                roster[property] = roster_read[property];
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
+        finally {
+            s3.getObject({
+                Bucket: bucket,
+                Key: 'roster_channel.txt'
+            }, function(err, data) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    roster_channel_id = data.Body.toString();
+                    s3.getObject({
+                        Bucket: bucket,
+                        Key:'roster_message.txt'
+                    }, function(err, data) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        else {
+                            roster_msg_id = data.Body.toString();
+                            client.login(process.env.BOT_TOKEN);
+                        }
+                    });
+                }
+            });
+        }
+    }
+});
 
 function floatToString(flt, decimal_places) {
     flt = Math.round(flt * Math.pow(10, decimal_places)) / Math.pow(10, decimal_places);
@@ -280,52 +323,9 @@ client.on('ready', () => {
     console.log('Connected');
     console.log('Logged in as:');
     console.log(client.user.username + ' - (' + client.user.id + ')');
-    s3.getObject({
-        Bucket: bucket,
-        Key: 'roster.json'
-    }, function(err, data) {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            try {
-                var roster_read = JSON.parse(data.Body.toString());
-                for (var property in roster_read) {
-                    roster[property] = roster_read[property];
-                }
-            }
-            catch (err) {
-                console.log(err);
-            }
-            finally {
-                s3.getObject({
-                    Bucket: bucket,
-                    Key: 'roster_channel.txt'
-                }, function(err, data) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    else {
-                        roster_channel_id = data.Body.toString();
-                        s3.getObject({
-                            Bucket: bucket,
-                            Key:'roster_message.txt'
-                        }, function(err, data) {
-                            if (err) {
-                                console.log(err);
-                            }
-                            else {
-                                roster_msg_id = data.Body.toString();
-                                if (client.channels.has(roster_channel_id)) {
-                                    roster_channel = client.channels.get(roster_channel_id);
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-        }
-    });
+    if (client.channels.has(roster_channel_id)) {
+        roster_channel = client.channels.get(roster_channel_id);
+    }
 });
 
 // Create an event listener for messages
@@ -626,7 +626,7 @@ client.on('message', message => {
         }
     }
 });
-client.login(process.env.BOT_TOKEN);
+
 // Create an event listener for a forceful close from the cmd prompt
 process.on('SIGINT', function(code) {
     console.log("Goodbye!");
