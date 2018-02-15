@@ -131,7 +131,6 @@ s3.getObject({
                     console.log(err);
                 }
                 else {
-                    console.log(data.Body.toString());
                     roster_channel_id = data.Body.toString();
                     s3.getObject({
                         Bucket: bucket,
@@ -141,7 +140,6 @@ s3.getObject({
                             console.log(err);
                         }
                         else {
-                            console.log(data.Body.toString());
                             roster_msg_id = data.Body.toString();
                             client.login(process.env.BOT_TOKEN);
                         }
@@ -496,6 +494,16 @@ client.on('message', message => {
                     }
                     roster_updated = true;
                     break;
+                case 'resetroster':
+                    if (formatted_msg.length != 1) {
+                        roster_channel.send("For future reference, 'ResetRoster' doesn't require any parameters!"); 
+                    }
+                    for (var player in roster.players) {
+                        roster.removePlayer(player);
+                    }
+                    for (var stat in roster){
+                        roster[stat] = 0;
+                    roster_updated = true;
                 case 'help':
                     if (formatted_msg.length === 1) {
                         var help_message = "__Help Commands:__\n" +
@@ -509,6 +517,7 @@ client.on('message', message => {
                         "__**ReportGameStats**, *playername*, *kills*, *knocks*, *revives*__: 'Reports' a recently played game by specifying the player, and the stats for that game. Updates the player by adding those stats to the player, and adding an additional game played.\n" +
                         "__**ResetPlayer**, *playername*__: Resets all of the player's stats to zero.\n" +
                         "__**ResetPlayer**, *playername*, *kills*, *knocks*, *revives*, *gamesplayed*__: Resets all of the player's stats to the stat values provided.\n" +
+                        "__**ResetRoster**__: Resets the roster to a completely empty state.\n" +
                         "__**Undo**__: Undoes the last action.\n" +
                         "__**UpdatePlayer**, *playername*, *property*, *new_value*__: Updates the chosen 'property' to the 'new_value' for the player specified by 'playername'.\n" +
                         "__**UpdatePointValue**, *property*, *new_value*__: Update the point value of the specified property as it contributes to the total score for each player in the roster.\n" +
