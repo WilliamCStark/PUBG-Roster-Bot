@@ -107,50 +107,6 @@ var roster_channel = null;
 var roster = new Roster({},0,0,0,0);
 var roster_msg_id = "";
 
-// fs.closeSync(fs.openSync('roster.json', 'a'));
-// const read_stream_roster = fs.createReadStream('roster.json');
-// read_stream_roster.setEncoding('utf8')
-// read_stream_roster.on("data", function (chunk) {
-//     assert.equal(typeof chunk, 'string');
-//     roster_string += chunk;
-// });
-// read_stream_roster.on("end", function() {
-//     try {
-//         var roster_read = JSON.parse(roster_string);
-//         for (var property in roster_read) {
-//             roster[property] = roster_read[property];
-//         }
-//     }
-//     catch (err) {
-
-//     }
-//     finally {
-//         // When roster has been read, begin reading the roster_channel
-//         fs.closeSync(fs.openSync('roster_channel.txt', 'a'));
-//         const read_stream_channel = fs.createReadStream('roster_channel.txt');
-//         read_stream_channel.setEncoding('utf8');
-//         read_stream_channel.on("data", function (chunk) {
-//             assert.equal(typeof chunk, 'string');
-//             roster_channel_id += chunk;
-//         });
-//         read_stream_channel.on("end", function() {
-            
-//             fs.closeSync(fs.openSync('roster_message.txt', 'a'));
-//             const read_stream_message = fs.createReadStream('roster_message.txt');
-//             read_stream_message.setEncoding('utf8');
-//             read_stream_message.on("data", function(chunk) {
-//                 assert.equal(typeof chunk, 'string');
-//                 roster_msg_id += chunk;
-//             });
-            
-//             read_stream_message.on("end", function() {
-//                 // Don't log the bot in until all files have been read
-//                 client.login(process.env.BOT_TOKEN);
-//             })
-            
-//         });
-//     }
-// });
 s3.getObject({
     Bucket: bucket,
     Key: 'roster.json'
@@ -178,8 +134,7 @@ s3.getObject({
                     console.log(err);
                 }
                 else {
-                    console.log(data.Body);
-                    roster_channel_id = data.Body;
+                    roster_channel_id = data.Body.toString();
                     s3.getObject({
                         Bucket: bucket,
                         Key:'roster_message.txt'
@@ -188,8 +143,7 @@ s3.getObject({
                             console.log(err);
                         }
                         else {
-                            console.log(data.Body);
-                            roster_message_id = data.Body;
+                            roster_message_id = data.Body.toString();
 
                         }
                     });
@@ -394,9 +348,6 @@ client.on('message', message => {
                     if (formatted_msg.length === 1) {
                         roster_channel.send(generateRosterMessage(roster)).then(function(message) {
                             roster_msg_id = message.id;
-                            // const write_stream_message_id = fs.createWriteStream('roster_message.txt');
-                            // write_stream_message_id.write(roster_msg_id);
-                            // write_stream_message_id.end();
                             s3.putObject({Bucket: bucket, Key: 'roster_message.txt', Body: roster_msg_id }, function(err, data) {
                                 if (err) {
                                     console.log(err);
@@ -413,9 +364,6 @@ client.on('message', message => {
                             }).catch(function(reason) { 
                                 roster_channel.send(generateRosterMessage(roster)).then(function(message) {
                                     roster_msg_id = message.id;
-                                    // const write_stream_message_id = fs.createWriteStream('roster_message.txt');
-                                    // write_stream_message_id.write(roster_msg_id);
-                                    // write_stream_message_id.end();
                                     s3.putObject({Bucket: bucket, Key: 'roster_message.txt', Body: roster_msg_id }, function(err, data) {
                                         if (err) {
                                             console.log(err);
@@ -635,9 +583,6 @@ client.on('message', message => {
                     roster_channel.send("Command not recognised. Did you remember to seperate each segment with a ','. If you need help with which commands to use, you can try typing 'Help' for a list of commands.");
             }
             if (roster_updated) {
-                // const write_stream_roster = fs.createWriteStream('roster.json');
-                // write_stream_roster.write(JSON.stringify(roster));
-                // write_stream_roster.end();
                 s3.putObject({Bucket: bucket, Key: 'roster.json', Body: JSON.stringify(roster) }, function(err, data) {
                     if (err) {
                         console.log(err);
@@ -649,9 +594,6 @@ client.on('message', message => {
                     }).catch(function(reason) { 
                         roster_channel.send(generateRosterMessage(roster)).then(function(message) {
                             roster_msg_id = message.id;
-                            // const write_stream_message_id = fs.createWriteStream('roster_message.txt');
-                            // write_stream_message_id.write(roster_msg_id);
-                            // write_stream_message_id.end();
                             s3.putObject({Bucket: bucket, Key: 'roster_message.txt', Body: roster_msg_id }, function(err, data) {
                                 if (err) {
                                     console.log(err);
@@ -667,9 +609,6 @@ client.on('message', message => {
             if (message.content === "!set roster channel"){
                 roster_channel = message.channel;
                 roster_channel.send("Roster Channel Set");
-                // const write_stream_channel = fs.createWriteStream('roster_channel.txt');
-                // write_stream_channel.write(roster_channel.id);
-                // write_stream_channel.end();
                 s3.putObject({Bucket: bucket, Key: 'roster_channel.txt', Body: roster_channel.id}, function(err, data) {
                     if (err) {
                         console.log(err);
