@@ -667,7 +667,7 @@ client.on('message', message => {
                 // const write_stream_channel = fs.createWriteStream('roster_channel.txt');
                 // write_stream_channel.write(roster_channel.id);
                 // write_stream_channel.end();
-                s3.putObject({Bucket: bucket, Key: 'roster_channel.txt', Body: roster_channel}, function(err, data) {
+                s3.putObject({Bucket: bucket, Key: 'roster_channel.txt', Body: roster_channel.id}, function(err, data) {
                     if (err) {
                         console.log(err);
                     }
